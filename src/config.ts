@@ -1,1 +1,1 @@
-export const basePath = '/';
+export const basePath = '/gmaps-search-nearby-tool';

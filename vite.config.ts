@@ -23,4 +23,7 @@ export default defineConfig({
     },
   },
   base: basePath,
+  build: {
+    outDir: 'docs/',
+  },
 });
