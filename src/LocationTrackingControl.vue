@@ -1,29 +1,22 @@
 <script setup lang="ts">
-import { computed, inject, nextTick, onUnmounted, reactive, ref, watch, watchEffect } from 'vue';
-import { default as L, type Map, type ControlPosition } from 'leaflet';
+import { computed } from 'vue';
+import { default as L, type ControlPosition } from 'leaflet';
 import {
   LControl,
   LMarker,
 } from 'vue-leaflet-ng';
-import LocationWatcher from './location-watcher';
 import markerTemplates from './marker-templates';
 
+type Props = {
+  position?: ControlPosition,
+  trackLocation: boolean,
+  lastLocationLatLng: { lat: number, lng: number } | undefined,
+};
 
-const { position = 'bottomright' } = defineProps<{ position?: ControlPosition }>();
+const emit = defineEmits(['toggleTrack']);
 
-const mapRef = ref(inject('map'));
-let map: Map | undefined = undefined;
-watch(mapRef, (newMap) => {
-  if (!newMap || !(newMap instanceof L.Map)) return;
-  console.log('LocationTracking: map ready');
-  map = newMap;
-  nextTick(() => map!.on('move', unTrack));
-}, { immediate: true });
-const trackLocation = ref(false);
-const locationWatcher = reactive(new LocationWatcher());
-const trackingLocation = computed(() => locationWatcher.watchingLocation);
-const lastLocation = computed(() => locationWatcher.lastLocation);
-const lastLocationLatLng = computed(() => (lastLocation.value?.coords ? { lat: lastLocation.value?.coords.latitude, lng: lastLocation.value?.coords.longitude } : undefined));
+const { position = 'bottomright', trackLocation, lastLocationLatLng  } = defineProps<Props>();
+
 const markerIcon = L.divIcon({
   html: markerTemplates['target']({ color1: 'rgba(96,96,96,96)' }),
   iconSize: [12, 12],
@@ -33,33 +26,9 @@ const markerIcon = L.divIcon({
 const markerPopupText = computed(() => `
   <h3>You</h3>
   <dl>
-    <dt>Location</dt><dd>${lastLocation.value}</dd><br>
+    <dt>Location</dt><dd>${lastLocationLatLng}</dd><br>
   </dl>
 `);
-
-watchEffect(() => {
-  if (trackLocation.value) locationWatcher.start();
-  else (locationWatcher.stop());
-});
-
-watchEffect(() => {
-  if (!trackingLocation.value && trackLocation) trackLocation.value = false;
-});
-
-watch(locationWatcher, () => {
-  if (trackLocation.value && lastLocationLatLng.value) {
-    if (map instanceof L.Map) map.panTo(lastLocationLatLng.value, { animate: false });
-  }
-});
-
-onUnmounted(() => {
-   if (!(map instanceof L.Map)) return;
-   map.off('move', unTrack);
-});
-
-function unTrack() {
-  trackLocation.value = false;
-}
 
 </script>
 <template>
@@ -70,9 +39,10 @@ function unTrack() {
     >
       <v-btn
         :active="trackLocation"
-        :icon="trackLocation ? lastLocation ? 'mdi-crosshairs-gps' : 'mdi-crosshairs-question' : 'mdi-crosshairs'"
+        :icon="trackLocation ? lastLocationLatLng ? 'mdi-crosshairs-gps' : 'mdi-crosshairs-question' : 'mdi-crosshairs'"
+        :title="trackLocation ? lastLocationLatLng ? 'mdi-crosshairs-gps' : 'mdi-crosshairs-question' : 'mdi-crosshairs'"
         density="compact"
-        @click.stop="trackLocation = !trackLocation"
+        @click.stop="emit('toggleTrack')"
       />
     </LControl>
     <LMarker

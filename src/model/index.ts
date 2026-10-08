@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { type MySearchNearbyRequest } from '@/gmaps/searchNearBy';
 import { AppName } from '@/constants';
 import Search from './search';
+import LocationWatcher from '@/location-watcher';
 import type { NewPlaceResult } from '@/gmaps/utils';
 export { default as Search } from './search';
 
@@ -11,6 +12,8 @@ export class Store {
   apiKey?: string;
   _searches: Record<string, Search> = {};
   placeCache: Record<string, NewPlaceResult> = {};
+  trackLocation: boolean = false;
+  locationWatcher: LocationWatcher = new LocationWatcher();
 
   get searches() {
     return Object.values(this._searches);

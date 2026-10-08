@@ -9,7 +9,7 @@ import SettingsDialog from './SettingsDialog.vue';
 import TileLayers from './TileLayers.vue';
 import PlaceSearchControl from './PlaceSearchControl.vue';
 import LocationTrackingControl from './LocationTrackingControl.vue';
-import { ref } from 'vue';
+import { ref, watch, type Ref } from 'vue';
 import model from './model';
 
 const emit = defineEmits(['ready']);
@@ -24,11 +24,37 @@ const mapDefaults = { // eslint-disable-line
 };
 const showSettingsDialog = ref(model.apiKey ? false : true);
 
+const map: Ref<Map | undefined> = ref(undefined);
+
+watch(map, () => {
+  if (map.value && model.locationWatcher.latLng) {
+    map.value.panTo(model.locationWatcher.latLng, { animate: false });
+  }
+});
+
+watch(model.locationWatcher, () => {
+  console.log(model.locationWatcher, model.locationWatcher.latLng, map);
+  if (model.trackLocation && model.locationWatcher.latLng) {
+    if (map.value instanceof L.Map) map.value.panTo(model.locationWatcher.latLng, { animate: false });
+  }
+});
 
 function mapReady(mapObject: Map) {
   L.control.scale().addTo(mapObject);
+  map.value = mapObject;
   emit('ready', mapObject);
 }
+
+function toggleTrack() {
+  if (model.trackLocation) {
+    model.trackLocation = false;
+    model.locationWatcher.stop();
+  } else {
+    model.trackLocation = true;
+    model.locationWatcher.start();
+  }
+}
+
 </script>
 
 
@@ -55,6 +81,9 @@ function mapReady(mapObject: Map) {
     />
     <LocationTrackingControl
       position="bottomright"
+      :track-location="model.trackLocation"
+      :last-location-lat-lng="model.locationWatcher.latLng"
+      @toggle-track="toggleTrack"
     />
     <slot />
   </LMap>
