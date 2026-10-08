@@ -26,6 +26,11 @@ function newSearch() {
   router.dispatch({ name: 'new' });
 }
 
+function confirm() {
+  model.reset();
+  showResetDbDialog.value = false;
+}
+
 </script>
 
 <template>
@@ -34,7 +39,7 @@ function newSearch() {
   >
     <PleaseConfirm
       @cancel="showResetDbDialog = false"
-      @confirm="() => { model.reset(); showResetDbDialog = false; }"
+      @confirm="confirm"
     />
   </v-dialog>
   <SettingsDialog

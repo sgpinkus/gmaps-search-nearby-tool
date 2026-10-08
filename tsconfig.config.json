@@ -4,10 +4,11 @@
     "vite.config.*",
     "vitest.config.*",
     "cypress.config.*",
-    "src/config.ts",
   ],
   "compilerOptions": {
     "composite": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   }
 }

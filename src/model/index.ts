@@ -5,7 +5,7 @@ import { type MySearchNearbyRequest } from '@/gmaps/searchNearBy';
 import { AppName } from '@/constants';
 import Search from './search';
 import type { NewPlaceResult } from '@/gmaps/utils';
-export {default as Search} from './search';
+export { default as Search } from './search';
 
 export class Store {
   apiKey?: string;

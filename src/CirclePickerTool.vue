@@ -5,6 +5,7 @@
  */
 import { inject, onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
 import type { LatLngLiteral, LeafletMouseEvent, Map } from 'leaflet';
+import * as L from 'leaflet';
 import {
   LMarker,
   LCircle,
