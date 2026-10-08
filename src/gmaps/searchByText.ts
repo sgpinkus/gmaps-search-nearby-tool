@@ -14,7 +14,7 @@ export type SearchResult = {
 export async function searchByText(request: Omit<google.maps.places.SearchByTextRequest, 'fields'>, apiKey: string): Promise<SearchResult> {
   const loader = new Loader({
     apiKey,
-    version: '3.58',
+    version: 'weekly',
   });
   const PlacesLibrary: google.maps.PlacesLibrary = await loader.importLibrary('places');
   const defaults = {
