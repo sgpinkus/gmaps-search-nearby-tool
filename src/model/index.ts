@@ -5,7 +5,7 @@ import { type MySearchNearbyRequest } from '@/gmaps/searchNearBy';
 import { AppName } from '@/constants';
 import Search from './search';
 import LocationWatcher from '@/location-watcher';
-import type { NewPlaceResult } from '@/gmaps/utils';
+import type { NewPlaceResult } from '@/gmaps/searchNearBy';
 export { default as Search } from './search';
 import { type LatLngLiteral } from 'leaflet';
 

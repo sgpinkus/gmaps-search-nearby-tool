@@ -1,12 +1,12 @@
 import { Loader } from '@googlemaps/js-api-loader';
 export type CircleLiteral = google.maps.CircleLiteral;
-import type { NewPlaceResult } from './utils';
-export type { NewPlaceResult as PlaceSummary } from './utils';
 
 export type SearchResult = {
-  places: NewPlaceResult[],
+  places: google.maps.places.Place[],
   nextPageToken?: string,
 }
+
+// type MyPlace = Omit<google.maps.places.Place, 'location'> & { location: google.maps.LatLngLiteral };
 
 /**
  * "new" API wrapper. Does not support paging.
@@ -21,6 +21,10 @@ export async function searchByText(request: Omit<google.maps.places.SearchByText
     includedType: 'locality',
     fields: ['location', 'formattedAddress', 'types', 'id'],
   };
-  const { places }: { places: any[] } = await PlacesLibrary.Place.searchByText({ ...defaults, ...request });
-  return { places, nextPageToken: undefined };
+  const { places } = await PlacesLibrary.Place.searchByText({ ...defaults, ...request });
+
+  return {
+    places,
+    nextPageToken: undefined,
+  };
 }

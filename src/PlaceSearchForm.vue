@@ -5,20 +5,32 @@ import { get, cloneDeep } from 'lodash';
 import { searchByText, type SearchResult } from './gmaps/searchByText';
 import type { PropType } from 'vue';
 export { type PlaceSummary } from './gmaps/searchByText';
+
+type Data = {
+  searchText: string,
+  searchResults: SearchResult['places'],
+  selectedSearchResult: null | google.maps.places.Place,
+  isLoading: boolean,
+  searchTimerId: number,
+  descriptionLimit: number,
+  count: number,
+}
+
 export default defineComponent({
   props: {
     locationBias: { type: Object as PropType<LatLngLiteral>, required: false, default: undefined },
     apiKey: { type: String, required: true },
   },
   emits: ['update', 'cancel'],
-  data(): Record<any, any> {
+  data(): Data {
     return {
       searchText: '',
       searchResults: [],
       selectedSearchResult: null,
       isLoading: false,
-      searchTimerId: null,
+      searchTimerId: 0,
       descriptionLimit: 60,
+      count: 0,
     };
   },
   computed: {

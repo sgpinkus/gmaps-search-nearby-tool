@@ -9,8 +9,6 @@
  */
 import { type LatLngLiteral } from 'leaflet';
 import { Loader } from '@googlemaps/js-api-loader';
-import { type NewPlaceResult, placeResultToPlaceSummary } from './utils';
-export { type NewPlaceResult as NewPlaceResult } from './utils';
 
 export type MySearchNearbyRequest = {
   location: LatLngLiteral,
@@ -28,6 +26,20 @@ export type MyGetDetailsResponse = {
   place: google.maps.places.PlaceResult | null,
   status: google.maps.places.PlacesServiceStatus
 };
+
+export type NewPlaceResult = {
+  location: google.maps.LatLngLiteral, // google.maps.places.SearchByTextRequest['location'] is a google.maps.LatLng
+  id: google.maps.places.Place['id'],
+} & google.maps.places.PlaceResult;
+
+export function placeResultToPlaceSummary(place: google.maps.places.PlaceResult): NewPlaceResult {
+  const location = place?.geometry?.location?.toJSON() || { lat: 0, lng: 0 };
+  return {
+    ...place,
+    location,
+    id: place.place_id!,
+  };
+}
 
 export class SearchNearByService {
   lastPage: NewPlaceResult[] = []; // derived from actual result google.maps.places.PlaceResult

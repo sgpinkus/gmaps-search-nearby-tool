@@ -5,7 +5,7 @@ import {
   LControl,
 } from 'vue-leaflet-ng';
 import model from '@/model/index';
-import { default as PlacesSearchForm, type PlaceSummary } from './PlaceSearchForm.vue';
+import { default as PlacesSearchForm } from './PlaceSearchForm.vue';
 
 const { position = 'topright' } = defineProps<{ position?: ControlPosition }>();
 
@@ -22,9 +22,9 @@ const center = computed(() => {
   return map.getCenter();
 });
 
-function searchFormUpdate(place: PlaceSummary) {
+function searchFormUpdate(place: google.maps.places.Place) {
   if (!(map instanceof L.Map)) return;
-  if (place.location) map.panTo(place.location);
+  if (place.location) map.panTo(place.location.toJSON());
   showSearchForm.value = false;
 }
 </script>
