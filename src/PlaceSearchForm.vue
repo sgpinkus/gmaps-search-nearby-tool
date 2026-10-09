@@ -4,7 +4,6 @@ import { type LatLngLiteral } from 'leaflet';
 import { get, cloneDeep } from 'lodash';
 import { searchByText, type SearchResult } from './gmaps/searchByText';
 import type { PropType } from 'vue';
-export { type PlaceSummary } from './gmaps/searchByText';
 
 type Data = {
   searchText: string,
