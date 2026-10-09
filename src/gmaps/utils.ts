@@ -3,15 +3,21 @@ export type NewPlaceResult = {
   id: google.maps.places.Place['id'],
 } & google.maps.places.PlaceResult;
 
-/**
- * Rename some fields for convenience and make id mandatory because it is.
- */
 export function placeResultToPlaceSummary(place: google.maps.places.PlaceResult): NewPlaceResult {
-  const lat = place.geometry?.location?.lat() || 0;
-  const lng = place.geometry?.location?.lng() || 0;
+  const location = googleMapLatLngToLatLngLiteral(place?.geometry?.location);
   return {
     ...place,
-    location: { lat, lng },
+    location,
     id: place.place_id!,
   };
+}
+
+/**
+ * PlaceResult.geometry.location (and other places) uses `google.maps.LatLng`
+ * where lat, lng are function for some bizarre Google reason.
+ */
+export function googleMapLatLngToLatLngLiteral(location: any) {
+  const lat = location?.lat() || 0;
+  const lng = location?.lng() || 0;
+  return { lat, lng };
 }
