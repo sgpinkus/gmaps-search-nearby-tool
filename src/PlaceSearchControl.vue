@@ -5,7 +5,7 @@ import {
   LControl,
 } from 'vue-leaflet-ng';
 import model from '@/model/index';
-import { default as SearchForm, type PlaceSummary } from './PlaceSearchForm.vue';
+import { default as PlacesSearchForm, type PlaceSummary } from './PlaceSearchForm.vue';
 
 const { position = 'topright' } = defineProps<{ position?: ControlPosition }>();
 
@@ -34,7 +34,7 @@ function searchFormUpdate(place: PlaceSummary) {
     <v-dialog
       v-model="showSearchForm"
     >
-      <SearchForm
+      <PlacesSearchForm
         v-if="model.apiKey"
         :api-key="model.apiKey"
         :location-bias="center"
