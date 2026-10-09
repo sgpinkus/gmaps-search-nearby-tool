@@ -26,7 +26,7 @@ const markerIcon = L.divIcon({
 const markerPopupText = computed(() => `
   <h3>You</h3>
   <dl>
-    <dt>Location</dt><dd>${lastLocationLatLng}</dd><br>
+    <dt>Location</dt><dd>${lastLocationLatLng?.lng},${lastLocationLatLng?.lat}</dd><br>
   </dl>
 `);
 

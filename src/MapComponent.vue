@@ -9,7 +9,7 @@ import SettingsDialog from './SettingsDialog.vue';
 import TileLayers from './TileLayers.vue';
 import PlaceSearchControl from './PlaceSearchControl.vue';
 import LocationTrackingControl from './LocationTrackingControl.vue';
-import { ref, watch, type Ref } from 'vue';
+import { computed, onMounted, ref, watch, type Ref } from 'vue';
 import model from './model';
 
 const emit = defineEmits(['ready']);
@@ -18,45 +18,70 @@ const mapStyle = {
  flex: 1,
  'flex-grow': 1,
 };
-const mapDefaults = { // eslint-disable-line
-  zoom: 11,
-  center: { lat: -25.3444277, lng: 131.0368822 },
-};
+const mapDefaults = computed(() => ({ // eslint-disable-line
+  zoom: model.mapState.zoom,
+  center: model.mapState.center,
+}));
 const showSettingsDialog = ref(model.apiKey ? false : true);
 
 const map: Ref<Map | undefined> = ref(undefined);
+ let changingLeafetProgrammatically: boolean = false;
 
-watch(map, () => {
-  if (map.value && model.locationWatcher.latLng) {
-    map.value.panTo(model.locationWatcher.latLng, { animate: false });
-  }
-});
+watch(() => model.mapState.center,
+  (center) => {
+    setCenter(center, { animate: false });
+  },
+  { deep: true },
+);
 
-watch(model.locationWatcher, () => {
-  console.log(model.locationWatcher, model.locationWatcher.latLng, map);
-  if (model.trackLocation && model.locationWatcher.latLng) {
-    if (map.value instanceof L.Map) map.value.panTo(model.locationWatcher.latLng, { animate: false });
-  }
-});
+watch(
+  () => model.mapState.zoom,
+  zoom => {
+    setZoom(zoom, { animate: false });
+  },
+);
+
+function setZoom(zoom: number, options: L.ZoomOptions) {
+  changingLeafetProgrammatically = true;
+  map.value?.setZoom(zoom, options);
+  setTimeout(() => changingLeafetProgrammatically = false, 0);
+}
+
+function setCenter(center: L.LatLngLiteral, options: L.PanOptions) {
+  changingLeafetProgrammatically = true;
+  map.value?.panTo(center, options);
+  setTimeout(() => changingLeafetProgrammatically = false, 0);
+}
+
+
 
 function mapReady(mapObject: Map) {
   L.control.scale().addTo(mapObject);
   map.value = mapObject;
   emit('ready', mapObject);
+  mapObject.on('zoom', () => {
+    if (!changingLeafetProgrammatically) {
+      const zoom = map.value?.getZoom();
+      if (zoom) {
+        model.mapState.zoom = zoom;
+      }
+    }
+  });
+  mapObject.on('moveend', () => {
+    if (!changingLeafetProgrammatically) {
+      const center = map.value?.getCenter();
+      if (center) {
+        model.mapState.center = center;
+      }
+    }
+  });
 }
 
 function toggleTrack() {
-  if (model.trackLocation) {
-    model.trackLocation = false;
-    model.locationWatcher.stop();
-  } else {
-    model.trackLocation = true;
-    model.locationWatcher.start();
-  }
+  model.mapState.trackLocation = !model.mapState.trackLocation;
 }
 
 </script>
-
 
 <template>
   <SettingsDialog v-model="showSettingsDialog" />
@@ -81,8 +106,8 @@ function toggleTrack() {
     />
     <LocationTrackingControl
       position="bottomright"
-      :track-location="model.trackLocation"
-      :last-location-lat-lng="model.locationWatcher.latLng"
+      :track-location="model.mapState.trackLocation"
+      :last-location-lat-lng="model.mapState.lastLocationLatlng"
       @toggle-track="toggleTrack"
     />
     <slot />
