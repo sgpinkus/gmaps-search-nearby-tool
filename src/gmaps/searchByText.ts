@@ -14,7 +14,7 @@ export type SearchResult = {
 export async function searchByText(request: Omit<google.maps.places.SearchByTextRequest, 'fields'>, apiKey: string): Promise<SearchResult> {
   const loader = new Loader({
     apiKey,
-    version: 'weekly',
+    version: '3.64',
   });
   const PlacesLibrary: google.maps.PlacesLibrary = await loader.importLibrary('places');
   const defaults = {
@@ -22,5 +22,5 @@ export async function searchByText(request: Omit<google.maps.places.SearchByText
     fields: ['location', 'formattedAddress', 'types', 'id'],
   };
   const { places }: { places: any[] } = await PlacesLibrary.Place.searchByText({ ...defaults, ...request });
-  return { places: (places || []).map(v => v['Eg']), nextPageToken: undefined };
+  return { places, nextPageToken: undefined };
 }

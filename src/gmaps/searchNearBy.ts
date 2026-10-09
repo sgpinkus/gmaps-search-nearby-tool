@@ -41,7 +41,7 @@ export class SearchNearByService {
   static async create(apiKey: string) {
     const loader = new Loader({
       apiKey,
-      version: 'weekly',
+      version: '3.64',
     });
     const lib: google.maps.PlacesLibrary = await loader.importLibrary('places');
     const service = new lib.PlacesService(window.document.createElement('div'));

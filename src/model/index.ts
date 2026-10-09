@@ -51,7 +51,7 @@ class MapState {
   }
 
   locationUpdate(e: CustomEvent) {
-    console.log('location-update', e, locationWatcher.latLng, this.trackLocation);
+    console.log('location-update', { latlng: locationWatcher.latLng, tracking: this.trackLocation });
     if (this.trackLocation && locationWatcher.latLng) {
       this._center = locationWatcher.latLng;
     }
